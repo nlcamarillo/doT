@@ -91,10 +91,10 @@
 
 	doT.template = function(tmpl, c, def) {
 		c = c || doT.templateSettings;
-		var cse = c.append ? startend.append : startend.split, needhtmlencode, sid = 0, indv,
+		var cse = c.append ? startend.append : startend.split, needhtmlencode, indv,
 			str  = (c.use || c.define) ? resolveDefs(c, tmpl, def || {}) : tmpl;
 
-		str = ("var out='" + (c.strip ? str.replace(/(^|\r|\n)\t* +| +\t*(\r|\n|$)/g," ")
+		str = ("'use strict'; var out='" + (c.strip ? str.replace(/(^|\r|\n)\t* +| +\t*(\r|\n|$)/g," ")
 					.replace(/\r|\n|\t|\/\*[\s\S]*?\*\//g,""): str)
 			.replace(/'|\\/g, "\\$&")
 			.replace(c.interpolate || skip, function(m, code) {
@@ -110,11 +110,11 @@
 					(code ? "';if(" + doT.unescape(code) + "){out+='" : "';}out+='");
 			})
 			.replace(c.iterate || skip, function(m, iterate, vname, iname) {
-				if (!iterate) return "';} } out+='";
+				if (!iterate) return "';} } } out+='";
 				vname = vname || c.varname.split(',')[0];
-				sid+=1; indv=iname || "i"+sid; iterate=doT.unescape(iterate);
-				return "';var arr"+sid+"="+iterate+";if(arr"+sid+"){var "+vname+","+indv+"=-1,l"+sid+"=arr"+sid+".length-1;while("+indv+"<l"+sid+"){"
-					+vname+"=arr"+sid+"["+indv+"+=1];out+='";
+				indv=iname || "i"; iterate=doT.unescape(iterate);
+				return "';{let arr="+iterate+";if(arr){let "+indv+"=-1,l=arr.length-1;while("+indv+"<l){let "
+					+vname+"=arr["+indv+"+=1];out+='";
 			})
 			.replace(c.evaluate || skip, function(m, code) {
 				return "';" + doT.unescape(code) + "out+='";
